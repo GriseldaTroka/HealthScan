@@ -4,16 +4,25 @@ import { getReactNativePersistence, initializeAuth } from 'firebase/auth';
 import { initializeFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
-// Firebase configuration
+// Firebase configuration via environment (no secrets committed)
 const firebaseConfig = {
-  apiKey: "AIzaSyD_ZeP8fHxd1HP4IYHDPoon-T0rS9tjZqw",
-  authDomain: "healthscanapp-a851a.firebaseapp.com",
-  projectId: "healthscanapp-a851a",
-  storageBucket: "healthscanapp-a851a.firebasestorage.app",
-  messagingSenderId: "290150179152",
-  appId: "1:290150179152:web:0046f7c957386009eccc55",
-  measurementId: "G-KB1MTEJMBJ"
+  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY || 'vendos celsin ketu',
+  authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN || 'vendos celsin ketu',
+  projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID || 'vendos celsin ketu',
+  storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET || 'vendos celsin ketu',
+  messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || 'vendos celsin ketu',
+  appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID || 'vendos celsin ketu',
+  measurementId: process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID || 'vendos celsin ketu',
 };
+
+// Basic validation to help developers set envs locally
+const missingKeys = Object.entries(firebaseConfig)
+  .filter(([_, v]) => !v || v === 'vendos celsin ketu')
+  .map(([k]) => k);
+
+if (missingKeys.length) {
+  console.warn('[Firebase] Missing config keys:', missingKeys.join(', '));
+}
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
