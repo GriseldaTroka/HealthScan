@@ -40,7 +40,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
         };
 
         // Special styling for center Scan button
-        if (route.name === 'Scan') {
+        if (route.name === 'Skano') {
           return (
             <TouchableOpacity
               key={route.key}

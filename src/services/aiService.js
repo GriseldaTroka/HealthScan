@@ -1,13 +1,12 @@
 // src/services/aiService.js
 
-// Vendos çelësin këtu (placeholder) – mos e commit me vlerë reale.
-// Preferohet variabla e ambientit EXPO_PUBLIC_OPENAI_API_KEY nese eshte e vendosur.
-const OPENAI_API_KEY = process.env.EXPO_PUBLIC_OPENAI_API_KEY || 'vendos celsin ketu';
+// Read from environment (set EXPO_PUBLIC_OPENAI_API_KEY in .env)
+const OPENAI_API_KEY = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
 
 // Analyze ingredients from scanned product
 export const analyzeIngredients = async (imageBase64, healthConditions) => {
-  if (!OPENAI_API_KEY || OPENAI_API_KEY === 'vendos celsin ketu') {
-    throw new Error('OpenAI API key mungon. Vendos çelësin te aiService.js ose përdor variabla ambienti.');
+  if (!OPENAI_API_KEY) {
+    throw new Error('OpenAI API key is not configured. Set EXPO_PUBLIC_OPENAI_API_KEY in .env');
   }
 
   try {
@@ -40,12 +39,20 @@ IMPORTANT RULES:
 1. Extract ALL ingredients visible in the image
 2. The user has these health conditions: ${conditionsList}
 3. Mark ingredient "safe": false if it conflicts with user's conditions:
-   - "Gluten Free" condition -> wheat, gluten, barley, rye, oats, flour (unless gluten-free) = UNSAFE
-   - "Lactose Free" condition -> milk, lactose, dairy, cheese, cream, butter, whey = UNSAFE
-   - "Nut Allergy" condition -> peanuts, almonds, walnuts, cashews, hazelnuts, pistachios, any tree nuts = UNSAFE
-   - "Low Sodium" condition -> if salt/sodium is high in ingredients = UNSAFE
+   - "Pa Gluten" condition -> wheat, gluten, barley, rye, oats, flour (unless gluten-free) = UNSAFE
+   - "Intolerance ndaj Laktozës" condition -> milk, lactose, dairy, cheese, cream, butter, whey = UNSAFE
+   - "Alergjia ndaj Arrave" condition -> peanuts, almonds, walnuts, cashews, hazelnuts, pistachios, any tree nuts = UNSAFE
+   - "Pak Kripe" condition -> if salt/sodium is high in ingredients = UNSAFE
    - "Diabetic" condition -> sugar, glucose, fructose, corn syrup, high fructose corn syrup = UNSAFE
-   - "Vegan" condition -> meat, fish, eggs, dairy, honey, gelatin, animal products = UNSAFE
+   - "Vegane" condition -> meat, fish, eggs, dairy, honey, gelatin, animal products = UNSAFE
+   - "Vegetariane" condition -> meat, fish, poultry = UNSAFE
+   - "Alergjia ndaj Frutave të Detit" condition -> shrimp, lobster, crab, clams, mussels, oysters, scallops = UNSAFE
+   - "Alergjia ndaj Vezëve" condition -> eggs, egg whites, mayonnaise, some baked goods = UNSAFE
+   - "Alergjia ndaj Sojës" condition -> soy, soy sauce, edamame, tofu, tempeh, miso = UNSAFE
+   - "Kolesterol i Lartë" condition -> saturated fats, trans fats, high cholesterol foods = UNSAFE
+   - "Sensitivitet ndaj Kafeinës" condition -> caffeine, coffee, tea, chocolate, energy drinks = UNSAFE
+   - "Alergjia ndaj Sesamit" condition -> sesame, tahini, sesame oil, halva = UNSAFE
+   - "Halal" condition -> must follow Islamic dietary laws = UNSAFE if not halal certified
 
 4. Set "overallSafe": false if ANY ingredient is unsafe
 5. Add specific warnings explaining why certain ingredients are unsafe
@@ -146,8 +153,8 @@ IMPORTANT RULES:
 
 // Generate recipes based on shelf products
 export const generateRecipes = async (shelfProducts, healthConditions) => {
-  if (!OPENAI_API_KEY || OPENAI_API_KEY === 'vendos celsin ketu') {
-    throw new Error('OpenAI API key mungon. Vendos çelësin te aiService.js ose përdor variabla ambienti.');
+  if (!OPENAI_API_KEY) {
+    throw new Error('OpenAI API key mungon. Vendos EXPO_PUBLIC_OPENAI_API_KEY në .env.');
   }
 
   try {
@@ -249,8 +256,8 @@ Rules:
 
 // Generate image for a recipe using DALL-E
 export const generateRecipeImage = async (imagePrompt, recipeName) => {
-  if (!OPENAI_API_KEY || OPENAI_API_KEY === 'vendos celsin ketu') {
-    throw new Error('OpenAI API key mungon. Vendos çelësin te aiService.js ose përdor variabla ambienti.');
+  if (!OPENAI_API_KEY) {
+    throw new Error('OpenAI API key mungon. Vendos EXPO_PUBLIC_OPENAI_API_KEY në .env.');
   }
 
   try {

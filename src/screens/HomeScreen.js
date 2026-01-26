@@ -14,15 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useUser } from '../context/UserContext';
 import HealthTag from '../components/HealthTag';
 import { COLORS, SPACING, RADIUS, FONTS } from '../styles/theme';
-
-const HEALTH_CONDITIONS = [
-  { id: '1', name: 'Gluten Free', icon: 'leaf', color: '#6B8E6B' },
-  { id: '2', name: 'Low Sodium', icon: 'water', color: '#5B9BD5' },
-  { id: '3', name: 'Lactose Free', icon: 'nutrition', color: '#F4A460' },
-  { id: '4', name: 'Nut Allergy', icon: 'warning', color: '#E57373' },
-  { id: '5', name: 'Diabetic', icon: 'fitness', color: '#9575CD' },
-  { id: '6', name: 'Vegan', icon: 'leaf', color: '#81C784' },
-];
+import { HEALTH_CONDITIONS } from '../data/healthConditions';
 
 const CATEGORIES = [
   { name: 'Salads', icon: 'nutrition' },

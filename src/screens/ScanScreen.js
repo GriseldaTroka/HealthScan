@@ -85,12 +85,25 @@ const ScanScreen = ({ navigation }) => {
 
   // Barcode scanner states
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
+  const [barcodeReady, setBarcodeReady] = useState(false);
   const [barcodeValue, setBarcodeValue] = useState(null);
   const [barcodeProductName, setBarcodeProductName] = useState(null);
   const [barcodeManualName, setBarcodeManualName] = useState('');
   const [isBarcodeLoading, setIsBarcodeLoading] = useState(false);
   const [isBarcodeAdding, setIsBarcodeAdding] = useState(false);
   const barcodeCameraRef = useRef(null);
+
+  // Ensure only one camera holds the resource; add a delay before mounting barcode camera
+  useEffect(() => {
+    if (showBarcodeScanner) {
+      setBarcodeReady(false);
+      // Longer delay to ensure main camera fully unmounts
+      const t = setTimeout(() => setBarcodeReady(true), 500);
+      return () => clearTimeout(t);
+    } else {
+      setBarcodeReady(false);
+    }
+  }, [showBarcodeScanner]);
 
   useEffect(() => {
     const pulse = Animated.loop(
@@ -520,23 +533,33 @@ const handleScan = async () => {
             </View>
             
             <TouchableOpacity style={styles.menuItem} onPress={() => navigateTo('Home')}>
-              <Ionicons name="home-outline" size={24} color={COLORS.primary} />
+              <Ionicons name="home-outline" size={22} color={COLORS.primary} />
               <Text style={styles.menuItemText}>Home</Text>
+              <Ionicons name="chevron-forward" size={22} color={COLORS.textLight} />
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.menuItem} onPress={() => navigateTo('Rafti')}>
+              <Ionicons name="bookmark-outline" size={22} color={COLORS.primary} />
+              <Text style={styles.menuItemText}>Rafti</Text>
+              <Ionicons name="chevron-forward" size={22} color={COLORS.textLight} />
             </TouchableOpacity>
             
             <TouchableOpacity style={[styles.menuItem, styles.menuItemActive]} onPress={() => setMenuVisible(false)}>
-              <Ionicons name="scan" size={24} color={COLORS.primary} />
+              <Ionicons name="scan" size={22} color={COLORS.primary} />
               <Text style={[styles.menuItemText, styles.menuItemTextActive]}>Skano</Text>
+              <Ionicons name="chevron-forward" size={22} color={COLORS.primary} />
             </TouchableOpacity>
             
-            <TouchableOpacity style={styles.menuItem} onPress={() => navigateTo('Prart')}>
-              <Ionicons name="restaurant-outline" size={24} color={COLORS.primary} />
-              <Text style={styles.menuItemText}>Receta </Text>
+            <TouchableOpacity style={styles.menuItem} onPress={() => navigateTo('Receta')}>
+              <Ionicons name="restaurant-outline" size={22} color={COLORS.primary} />
+              <Text style={styles.menuItemText}>Receta</Text>
+              <Ionicons name="chevron-forward" size={22} color={COLORS.textLight} />
             </TouchableOpacity>
             
-            <TouchableOpacity style={styles.menuItem} onPress={() => navigateTo('Profile')}>
-              <Ionicons name="person-outline" size={24} color={COLORS.primary} />
-              <Text style={styles.menuItemText}>Llogaria </Text>
+            <TouchableOpacity style={styles.menuItem} onPress={() => navigateTo('Profili')}>
+              <Ionicons name="person-outline" size={22} color={COLORS.primary} />
+              <Text style={styles.menuItemText}>Profili</Text>
+              <Ionicons name="chevron-forward" size={22} color={COLORS.textLight} />
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
@@ -566,7 +589,7 @@ const handleScan = async () => {
             </View>
 
             <Text style={styles.resultTitle}>
-              {scanResult?.overallSafe ? 'Safe to Consume' : 'Contains Allergens'}
+              {scanResult?.overallSafe ? 'E sigurt për konsum' : 'Përmban alergjenë'}
             </Text>
             
             <Text style={styles.productName}>{scanResult?.productName}</Text>
@@ -613,13 +636,13 @@ const handleScan = async () => {
 
             {/* Action Buttons */}
             <View style={styles.resultActions}>
-              {scanResult?.productName && scanResult.productName !== 'Unknown Product' ? (
+              {scanResult?.productName && scanResult.productName !== 'Produkt i panjohur' ? (
                 <TouchableOpacity 
                   style={styles.addToShelfButton}
                   onPress={addToShelf}
                 >
                   <Ionicons name="add" size={20} color={COLORS.white} />
-                  <Text style={styles.addToShelfText}>Shto ne raft </Text>
+                  <Text style={styles.addToShelfText}>Shto ne raft</Text>
                 </TouchableOpacity>
               ) : (
                 <TouchableOpacity 
@@ -676,15 +699,35 @@ const handleScan = async () => {
 
           {/* Camera Box */}
           <View style={styles.barcodeCameraBox}>
-            <CameraView
-              ref={barcodeCameraRef}
-              style={styles.barcodeCamera}
-              facing="back"
-              onBarcodeScanned={handleBarcodeScanned}
-              barcodeScannerSettings={{
-                barcodeTypes: ['ean13', 'ean8', 'upc_a', 'upc_e', 'code128', 'code39'],
-              }}
-            />
+            {/* Permission gate and delayed mount to avoid black camera */}
+            {!permission?.granted ? (
+              <View style={styles.noPermissionContainer}>
+                <View style={styles.noPermissionIcon}>
+                  <Ionicons name="camera" size={48} color={COLORS.primary} />
+                </View>
+                <Text style={styles.noPermissionTitle}>Kerkohet aksesi i kameres</Text>
+                <Text style={styles.noPermissionText}>Ju lutem jepni leje për kamerën për të skanuar barkode.</Text>
+                <TouchableOpacity style={styles.retryButton} onPress={requestPermission}>
+                  <Text style={styles.retryButtonText}>Autorizo</Text>
+                </TouchableOpacity>
+              </View>
+            ) : !barcodeReady ? (
+              <View style={styles.barcodeLoadingOverlay}>
+                <ActivityIndicator size="large" color={COLORS.primary} />
+                <Text style={styles.barcodeLoadingText}>Duke hapur kamerën…</Text>
+              </View>
+            ) : (
+              <CameraView
+                key="barcode-camera"
+                ref={barcodeCameraRef}
+                style={styles.barcodeCamera}
+                facing="back"
+                onBarcodeScanned={handleBarcodeScanned}
+                barcodeScannerSettings={{
+                  barcodeTypes: ['ean13', 'ean8', 'upc_a', 'upc_e', 'code128', 'code39'],
+                }}
+              />
+            )}
             <View style={styles.barcodeFrameBorder} pointerEvents="none" />
             {isBarcodeLoading && (
               <View style={styles.barcodeLoadingOverlay}>
