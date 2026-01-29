@@ -106,11 +106,7 @@ expo run:android
 eas build --platform android
 ```
 
-### Building for iOS (if applicable)
 
-```bash
-eas build --platform ios
-```
 
 ## Configuration Files
 
@@ -125,20 +121,6 @@ Ensure the following are set up:
 - Firebase API credentials
 - OpenAI API key (used in aiService)
 
-## Contributing
-
-1. Create a feature branch
-2. Make your changes
-3. Test on both iOS and Android (if applicable)
-4. Submit a pull request
-
-## License
-
-[Add your license information here]
-
-## Contact
-
-For questions or support, please contact [your contact information]
 
 ## Troubleshooting
 
