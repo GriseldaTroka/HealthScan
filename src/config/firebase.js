@@ -24,6 +24,9 @@ if (missingKeys.length) {
   console.warn('[Firebase] Missing config keys:', missingKeys.join(', '));
 }
 
+// Export a flag so other modules can short-circuit if Firebase config is absent.
+export const firebaseConfigured = missingKeys.length === 0;
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 

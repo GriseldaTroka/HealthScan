@@ -31,8 +31,9 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "ce53e9d6-9236-461e-a3fd-0697816dc736"
+        "projectId": "d5f4b6f9-f82b-4a58-a48c-3d3d441409e7"
       }
-    }
+    },
+    "owner": "kusheriratt"
   }
 }

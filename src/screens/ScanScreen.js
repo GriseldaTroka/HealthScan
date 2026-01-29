@@ -636,7 +636,11 @@ const handleScan = async () => {
 
             {/* Action Buttons */}
             <View style={styles.resultActions}>
-              {scanResult?.productName && scanResult.productName !== 'Produkt i panjohur' ? (
+              {(() => {
+                const productName = scanResult?.productName?.trim();
+                const isUnknown = !productName || ['Produkt i panjohur', 'Unknown Product'].includes(productName);
+                return !isUnknown;
+              })() ? (
                 <TouchableOpacity 
                   style={styles.addToShelfButton}
                   onPress={addToShelf}

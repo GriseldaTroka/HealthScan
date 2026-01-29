@@ -1,7 +1,7 @@
 // src/services/firebaseService.js
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BARCODE_MAP } from '../data/barcodes';
-import { db } from '../config/firebase';
+import { db, firebaseConfigured } from '../config/firebase';
 import { doc, getDoc, getDocFromServer, setDoc } from 'firebase/firestore';
 
 const STORAGE_KEY = 'localBarcodes';
@@ -30,7 +30,7 @@ const persistExtraBarcodes = async () => {
 export const getProductByBarcode = async (barcode) => {
   // Try Firestore collection: 'barcodes' with document ID equal to barcode
   try {
-    if (db) {
+    if (firebaseConfigured && db) {
       // Prefer fresh read from server to avoid cached stale data
       let snap;
       try {
@@ -54,10 +54,14 @@ export const getProductByBarcode = async (barcode) => {
   }
 
   // Local static list
+  console.log('[Barcode] Checking local BARCODE_MAP for:', barcode);
+  console.log('[Barcode] BARCODE_MAP keys sample:', Object.keys(BARCODE_MAP).slice(0, 5));
   const localName = BARCODE_MAP[barcode];
   if (localName) {
+    console.log('[Barcode] Found in local map:', localName);
     return { barcode, name: localName, found: true, source: 'local' };
   }
+  console.log('[Barcode] Not found in local map');
 
   // User-added persisted list
   const extras = await ensureExtraBarcodesLoaded();
